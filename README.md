@@ -1,2 +1,2 @@
-# github-action-common
-Commonly used Github action for Amplify-BIO CI/CD processes
+# github-actions-common
+Commonly used Github actions for Amplify-BIO CI/CD processes
