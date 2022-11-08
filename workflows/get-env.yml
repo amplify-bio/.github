@@ -1,0 +1,27 @@
+name: Determine deployment envirionment from Github action context
+
+on:
+  workflow_call:
+    outputs:
+      environment:
+        description: deployment environment
+        value: ${{ jobs.get-env.env.outputs.environment }}
+jobs:
+  get-env:
+    name: Determine deployment envirionment from Github action context
+    runs-on: self-hosted
+    outputs:
+      environment: ${{ steps.env.outputs.ENVIRONMENT }}
+    steps:
+      - name: Determine deployment environment
+        id: env
+        shell: bash
+        run: |
+          if [ ${{ github.event_name }} == 'release' ]
+          then 
+            echo "ENVIRONMENT=prod" >> $GITHUB_OUTPUT
+          elif [ ${{ github.event_name }} == 'push' ] && [ ${{ github.ref_name }} == 'main' ]
+            echo "ENVIRONMENT=stage" >> $GITHUB_OUTPUT
+          else
+            echo "ENVIRONMENT=dev" >> $GITHUB_OUTPUT
+          fi
