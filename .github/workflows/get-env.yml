@@ -21,6 +21,7 @@ jobs:
           then 
             echo "ENVIRONMENT=prod" >> $GITHUB_OUTPUT
           elif [ ${{ github.event_name }} == 'push' ] && [ ${{ github.ref_name }} == 'main' ]
+          then
             echo "ENVIRONMENT=stage" >> $GITHUB_OUTPUT
           else
             echo "ENVIRONMENT=dev" >> $GITHUB_OUTPUT

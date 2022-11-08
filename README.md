@@ -1,6 +1,6 @@
-# github-actions-common
+# .github
 
-Commonly used Github actions for Amplify-BIO CI/CD processes
+Commonly used Github actions for Amplify-BIO CI/CD processes. Workflow templates can be implemented here also. See <https://docs.github.com/en/actions/using-workflows/creating-starter-workflows-for-your-organization>
 
 ## Deployment Guideline
 
