@@ -5,7 +5,7 @@ on:
     outputs:
       environment:
         description: deployment environment
-        value: ${{ jobs.get-env.env.outputs.environment }}
+        value: ${{ jobs.get-env.outputs.environment }}
 jobs:
   get-env:
     name: Determine deployment envirionment from Github action context
