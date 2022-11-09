@@ -20,9 +20,11 @@ jobs:
           if [ ${{ github.event_name }} == 'release' ]
           then 
             echo "ENVIRONMENT=prod" >> $GITHUB_OUTPUT
-          elif [ ${{ github.event_name }} == 'push' ] && [ ${{ github.ref_name }} == 'main' ]
+          elif [ '${{ github.event_name }}' == 'push' ] && [ '${{ github.ref_name }}' == 'main' ]
           then
             echo "ENVIRONMENT=stage" >> $GITHUB_OUTPUT
           else
             echo "ENVIRONMENT=dev" >> $GITHUB_OUTPUT
           fi
+      - shell: bash
+        run: echo "The deployment environment is ${{ steps.env.outputs.ENVIRONMENT }}"
