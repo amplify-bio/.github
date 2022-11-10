@@ -1,0 +1,23 @@
+name: Get the dev version number for container image and helm chart
+
+on:
+  workflow_call:
+    outputs:
+      image-tag: ${{ jobs.version.outputs.image-tag }}
+      helm-version: ${{ jobs.version.putputs.helm-version }}
+jobs:
+  version:
+    runs-on: ubuntu-latest
+    environment: dev
+    outputs:
+      image-tag: ${{ steps.version.outputs.IMAGE_TAG }}
+      helm-version: ${{ steps.version.outputs.HELM_VERSION }}
+    steps:
+    - uses: actions/checkout@v3
+    - name: version
+      id: version
+      run: |
+        branch=$(echo ${GITHUB_REF#refs/heads/})
+        sha_short=$(git rev-parse --short HEAD)
+        echo "IMAGE_TAG=App-${branch}-${sha_short}" >> $GITHUB_OUTPUT
+        echo "HELM_VERSION=0.1.0-${branch}-${sha_short}" >> $GITHUB_OUTPUT
