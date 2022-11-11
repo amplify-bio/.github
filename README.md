@@ -15,6 +15,7 @@ Commonly used Github actions for Amplify-BIO CI/CD processes. Workflow templates
 - `docker-push-scan-on-ecr`: Push the Docker image to ECR and scan the image.
 - `helm-push-to-ecr`: Package the helm chart and push it to ECR (OCI Artifact). Helm chart should be in `devops/Helm/`.
 - `helm-deploy-ecr-to-eks`: Deploy helm chart storing in ECR on EKS cluster.
+- `aws-eventbridge-rule-targets`: Create/Update the targets of an AWS EventBridge rule. It is a wrapper of `boto3.EventBridge.put_targets`. The rule should have been created.
 
 ### Workflows
 
