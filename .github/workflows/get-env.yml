@@ -7,17 +7,15 @@ on:
         description: deployment environment
         value: ${{ jobs.get-env.outputs.environment }}
       aws-access-key-id: 
-        value: ${{ jobs.get-env.outputs.aws-access-key-id }}
+        value: ${{ jobs.get-credentials.outputs.aws-access-key-id }}
       aws-secret-access-key: 
-        value: ${{ jobs.get-env.outputs.aws-secret-access-key }}
+        value: ${{ jobs.get-credentials.outputs.aws-secret-access-key }}
 jobs:
   get-env:
     name: Determine deployment envirionment from Github action context
     runs-on: self-hosted
     outputs:
       environment: ${{ steps.env.outputs.ENVIRONMENT }}
-      aws-access-key-id: ${{ steps.env.outputs.AWS_ACCESS_KEY_ID }}
-      aws-secret-access-key: ${{ steps.env.outputs.AWS_SECERT_ACCESS_KEY }}
     steps:
       - name: Determine deployment environment
         id: env
@@ -26,17 +24,36 @@ jobs:
           if [ ${{ github.event_name }} == 'release' ]
           then 
             echo "ENVIRONMENT=prod" >> $GITHUB_OUTPUT
-            echo "AWS_ACCESS_KEY_ID=${{ secrets.AWS_ACCESS_KEY_ID_PROD }}" >> $GITHUB_OUTPUT
-            echo "AWS_SECERT_ACCESS_KEY=${{ secrets.AWS_SECRET_ACCESS_KEY_PROD }}" >> $GITHUB_OUTPUT
           elif [ '${{ github.event_name }}' == 'push' ] && [ '${{ github.ref_name }}' == 'main' ]
           then
             echo "ENVIRONMENT=stage" >> $GITHUB_OUTPUT
-            echo "AWS_ACCESS_KEY_ID=${{ secrets.AWS_ACCESS_KEY_ID_STAGE }}" >> $GITHUB_OUTPUT
-            echo "AWS_SECERT_ACCESS_KEY=${{ secrets.AWS_SECRET_ACCESS_KEY_STAGE }}" >> $GITHUB_OUTPUT
           else
             echo "ENVIRONMENT=dev" >> $GITHUB_OUTPUT
-            echo "AWS_ACCESS_KEY_ID=${{ secrets.AWS_ACCESS_KEY_ID_DEV }}" >> $GITHUB_OUTPUT
-            echo "AWS_SECERT_ACCESS_KEY=${{ secrets.AWS_SECRET_ACCESS_KEY_DEV }}" >> $GITHUB_OUTPUT
           fi
       - shell: bash
         run: echo "The deployment environment is ${{ steps.env.outputs.ENVIRONMENT }}"
+  get-credentials:
+    needs: get-env
+    name: Get AWS credentials based on the environment
+    runs-on: self-hosted
+    outputs:
+      aws-access-key-id: ${{ steps.credentials.outputs.AWS_ACCESS_KEY_ID }}
+      aws-secret-access-key: ${{ steps.credentials.outputs.AWS_SECERT_ACCESS_KEY }}
+    steps:
+    - name: Determine deployment environment
+      id: credentials
+      shell: bash
+      run: |
+        if [ ${{ needs.get-env.outputs.environment }} == 'prod' ]
+        then 
+          echo "AWS_ACCESS_KEY_ID=${{ secrets.AWS_ACCESS_KEY_ID_PROD }}" >> $GITHUB_OUTPUT
+          echo "AWS_SECERT_ACCESS_KEY=${{ secrets.AWS_SECRET_ACCESS_KEY_PROD }}" >> $GITHUB_OUTPUT
+        elif [ '${{ needs.get-env.outputs.environment }}' == 'stage' ]
+        then
+          echo "AWS_ACCESS_KEY_ID=${{ secrets.AWS_ACCESS_KEY_ID_STAGE }}" >> $GITHUB_OUTPUT
+          echo "AWS_SECERT_ACCESS_KEY=${{ secrets.AWS_SECRET_ACCESS_KEY_STAGE }}" >> $GITHUB_OUTPUT
+        else
+          echo "AWS_ACCESS_KEY_ID=${{ secrets.AWS_ACCESS_KEY_ID_DEV }}" >> $GITHUB_OUTPUT
+          echo "AWS_SECERT_ACCESS_KEY=${{ secrets.AWS_SECRET_ACCESS_KEY_DEV }}" >> $GITHUB_OUTPUT
+        fi
+
