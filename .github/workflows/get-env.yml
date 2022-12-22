@@ -12,6 +12,7 @@ jobs:
     runs-on: self-hosted
     outputs:
       environment: ${{ steps.env.outputs.ENVIRONMENT }}
+      runner: ${{ steps.env.outputs.RUNNER }}
     steps:
       - name: Determine deployment environment
         id: env
@@ -26,5 +27,8 @@ jobs:
           else
             echo "ENVIRONMENT=dev" >> $GITHUB_OUTPUT
           fi
+          echo "RUNNER=self-hosted" >> $GITHUB_OUTPUT
       - shell: bash
-        run: echo "The deployment environment is ${{ steps.env.outputs.ENVIRONMENT }}"
+        run: |
+          echo "Deployment environment: ${{ steps.env.outputs.ENVIRONMENT }}"
+          echo "Github action: ${{ steps.env.outputs.RUNNER }}"
